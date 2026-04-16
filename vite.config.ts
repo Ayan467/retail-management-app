@@ -6,12 +6,15 @@ import path from "path";
 
 // https://vite.dev/config/
 export default defineConfig({
-  // 🔴 IMPORTANT: GitHub Pages repo name
-  base: "/retail-management-app/",
+  // ✅ Vercel/Netlify ke liye root path
+  base: "/",
 
   plugins: [
     react(),
-    miaodaDevPlugin(),
+
+    // ✅ Sirf local dev mein chalega, Netlify build mein nahi
+    process.env.NODE_ENV !== "production" && miaodaDevPlugin(),
+
     svgr({
       svgrOptions: {
         icon: true,
@@ -19,7 +22,7 @@ export default defineConfig({
         namedExport: "ReactComponent",
       },
     }),
-  ],
+  ].filter(Boolean), // ✅ false values hata deta hai
 
   resolve: {
     alias: {
@@ -27,7 +30,7 @@ export default defineConfig({
     },
   },
 
-  // ✅ Optional but good practice
+  // ✅ Production build settings
   build: {
     outDir: "dist",
     sourcemap: false,
@@ -38,5 +41,3 @@ export default defineConfig({
     open: true,
   },
 });
-
-
