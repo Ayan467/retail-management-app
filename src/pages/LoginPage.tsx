@@ -7,6 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import type { UserRole } from '@/types/types';
 import { Store, AlertCircle } from 'lucide-react';
 
 export default function LoginPage() {
@@ -15,6 +17,7 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('login');
+  const [role, setRole] = useState<UserRole>('cashier');
   
   const { signInWithUsername, signUpWithUsername } = useAuth();
   const navigate = useNavigate();
@@ -59,7 +62,7 @@ export default function LoginPage() {
     }
 
     try {
-      const { error } = await signUpWithUsername(username, password);
+      const { error } = await signUpWithUsername(username, password, role);
       if (error) {
         setError(error.message || 'Signup failed. Username may already exist.');
       } else {
@@ -175,13 +178,25 @@ export default function LoginPage() {
                   </p>
                 </div>
                 
+                <div className="space-y-2">
+                  <Label htmlFor="signup-role">Sign up as</Label>
+                  <Select value={role} onValueChange={(v: UserRole) => setRole(v)} disabled={loading}>
+                    <SelectTrigger id="signup-role">
+                      <SelectValue placeholder="Select role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="cashier">Cashier</SelectItem>
+                      <SelectItem value="inventory_manager">Inventory Manager</SelectItem>
+                      <SelectItem value="supplier">Supplier</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? 'Creating account...' : 'Create Account'}
                 </Button>
                 
-                <p className="text-xs text-center text-muted-foreground">
-                  First user will be assigned as Admin
-                </p>
               </form>
             </TabsContent>
           </Tabs>
